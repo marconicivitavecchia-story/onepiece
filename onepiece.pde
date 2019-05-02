@@ -1,33 +1,97 @@
-PShape rufy;
-PShape nave;
-PShape raftel;
+Personaggio rufy;
+Veicolo nave;
+Isola raftel;
 
-int rufyY, naveY;
+PShape tesoro;
+boolean rufyOnIsland = false;
+boolean naveFermata = false;
 
-void setup (){
+
+void setup () {
   fullScreen ();
-  
-  rufy = createShape (RECT, 0, 0, 100, 100);
-  rufy.setFill (#F6FF00);
-  
-  nave = createShape (RECT, 0, 0, 200, 300);
-  nave.setFill (#59330A);
-  
-  raftel = createShape (ELLIPSE, 0, 0, 400, 250);
-  raftel.setFill (#037A17);
-  
-  rufyY = height - 150;
-  naveY = height - 200;
-  
+
+  //creazione di rufy con la sua grandezza
+  rufy = new Personaggio(100, 100, #E3DF10, width*.45, height*.85);
+
+  //creazione della nave con la sua grandezza
+  nave = new Veicolo(200, 300, width*.42, height*.8);
+
+  //creazione dell'isola raftel
+  raftel = new Isola(width*0.5, height*0.25);
+
+  tesoro = createShape ( RECT, 0, 0, 75, 75);
+  tesoro.setStrokeWeight (17);
+  tesoro.setStroke (#59330A);
+  tesoro.setFill (#DCC132);
 }
 
-void draw (){
+void draw () {
   
-  background (#0370A3);
-  
-  shape ( nave, width/2, naveY );
-  shape ( rufy, width/2 + 50, rufyY  );
-  shape ( raftel, width/2 - 75, height/4 );
-  
+  println(width);
 
+  // Scena nave
+  if ( rufyOnIsland == false )
+  {
+    background (#0370A3);
+
+    //visualizzazione della nave
+    nave.display();
+
+    //visualizzazione dell'isola raftel
+    raftel.display();
+
+    //visualizzazione del personaggio rufy
+    rufy.display();
+
+    if ( nave.y <= raftel.y + 125 ){
+     
+      nave.velocita = 0;
+      nave.muoviti ( rufy );
+      naveFermata = true;
+    }else{
+     
+      nave.velocita = 5;
+      nave.muoviti ( rufy );
+    }
+    
+    if ( naveFermata == true ){
+      
+      if ( rufy.y >= raftel.y*.5 ){
+        
+      rufy.y--;
+      }
+      
+      if ( rufy.y <= raftel.y*.5 ){
+      
+        rufy.y-=0;
+        rufyOnIsland = true;
+      }
+      
+    }
+  }
+
+  // Scena isola
+  if ( rufyOnIsland == true ) {
+
+    background (#037A17);
+
+    if ( rufy.y <= raftel.y*.5 ) {
+
+      rufy.y = height*.85;
+    }
+
+    //visualizzazione di rufy nell'isola
+    rufy.display();
+    shape ( tesoro, width*.51, height*.25 );
+
+    //movimento di rufy nell'isola
+    if ( rufy.y <= height*.33 ) {
+
+      rufy.y -= 0;
+      tesoro.setFill (#000000);
+    } else {
+
+      rufy.y -= 2;
+    }
+  }
 }
